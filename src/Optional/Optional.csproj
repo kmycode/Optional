@@ -8,6 +8,7 @@
     <Authors>Nils Lück</Authors>
     <Copyright>Copyright © 2014</Copyright>
     <NoWarn>1591</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net35' ">
@@ -16,10 +17,6 @@
   
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
     <DefineConstants>NETSTANDARD10</DefineConstants>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
 </Project>
