@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Optional.Collections
+namespace Optional
 {
     public static class OptionCollectionExtensions
     {
