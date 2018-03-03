@@ -66,6 +66,18 @@ namespace Optional.Collections
             }
         }
 
+        public static IEnumerable<Option<T>> TakeSome<T>(this IEnumerable<Option<T>> source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            return source.TakeWhile(x => x.HasValue);
+        }
+
+        public static IEnumerable<Option<T>> SkipNone<T>(this IEnumerable<Option<T>> source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            return source.SkipWhile(x => !x.HasValue);
+        }
+
         /// <summary>
         /// Returns the value associated with the specified key if such exists.
         /// A dictionary lookup will be used if available, otherwise falling
