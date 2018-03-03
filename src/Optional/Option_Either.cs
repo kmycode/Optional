@@ -539,6 +539,29 @@ namespace Optional
             if (exceptionFactory == null) throw new ArgumentNullException(nameof(exceptionFactory));
             return hasValue && value == null ? Option.None<T, TException>(exceptionFactory()) : this;
         }
+
+        /// <summary>
+        /// Casts an optional, and returns none value if the value cannot be casted.
+        /// </summary>
+        /// <returns>The casted optional.</returns>
+        public Option<TResult> OfType<TResult>() =>
+            (value is TResult result) ? result.Some() : Option.None<TResult>();
+
+        /// <summary>
+        /// Casts an optional, and returns none value if the value cannot be casted.
+        /// </summary>
+        /// <param name="exception">The exceptional value to attach.</param>
+        /// <returns>The casted optional.</returns>
+        public Option<TResult, TException> OfType<TResult>(TException exception) =>
+            (value is TResult result) ? result.Some<TResult, TException>() : Option.None<TResult, TException>(exception);
+
+        /// <summary>
+        /// Casts an optional, and returns none value if the value cannot be casted.
+        /// </summary>
+        /// <param name="exceptionFactory">A factory function to create an exceptional value to attach.</param>
+        /// <returns>The casted optional.</returns>
+        public Option<TResult, TException> OfType<TResult>(Func<TException> exceptionFactory) =>
+            (value is TResult result) ? result.Some<TResult, TException>() : Option.None<TResult, TException>(exceptionFactory());
     }
 
     internal sealed class OptionDebugView<T, TException>

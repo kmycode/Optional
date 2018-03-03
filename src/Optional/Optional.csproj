@@ -18,4 +18,8 @@
     <DefineConstants>NETSTANDARD10</DefineConstants>
   </PropertyGroup>
   
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  
 </Project>

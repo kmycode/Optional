@@ -426,6 +426,13 @@ namespace Optional
         /// </summary>
         /// <returns>The filtered optional.</returns>
         public Option<T> NotNull() => hasValue && value == null ? Option.None<T>() : this;
+
+        /// <summary>
+        /// Casts an optional, and returns none value if the value cannot be casted.
+        /// </summary>
+        /// <returns>The casted optional.</returns>
+        public Option<TResult> OfType<TResult>() =>
+            (value is TResult result) ? result.Some() : Option.None<TResult>();
     }
 
     internal sealed class OptionDebugView<T>
