@@ -215,5 +215,27 @@ namespace Optional
         /// <returns>A flattened optional.</returns>
         public static Option<T, TException> Flatten<T, TException>(this Option<Option<T, TException>, TException> option) =>
             option.FlatMap(innerOption => innerOption);
+
+        /// <summary>
+        /// Evaluates a specified action, based on whether a value is present or not.
+        /// </summary>
+        /// <param name="option">The optional.</param>
+        /// <param name="some">The action to evaluate if the value is present.</param>
+        /// <param name="noneWithExp">The action to evaluate if the value is missing and hold an exception.</param>
+        /// <param name="none">The action to evaluate if the value is missing and dont hold an exception.</param>
+        public static void Match<T, TException>(this Option<T, Option<TException>> option, Action<T> some, Action<TException> noneWithExp, Action none)
+            where TException : Exception =>
+            option.Match(some, exp => exp.Match(ex => noneWithExp(ex), () => none()));
+
+        /// <summary>
+        /// Evaluates a specified action, based on whether a value is present or not.
+        /// </summary>
+        /// <param name="option">The optional.</param>
+        /// <param name="some">The action to evaluate if the value is present.</param>
+        /// <param name="noneWithExp">The action to evaluate if the value is missing and hold an exception.</param>
+        /// <param name="none">The action to evaluate if the value is missing and dont hold an exception.</param>
+        public static TResult Match<T, TException, TResult>(this Option<T, Option<TException>> option, Func<T, TResult> some, Func<TException, TResult> noneWithExp, Func<TResult> none)
+            where TException : Exception =>
+            option.Match(some, exp => exp.Match(ex => noneWithExp(ex), () => none()));
     }
 }
