@@ -288,43 +288,7 @@ namespace Optional
         public static Option<TSource> SingleOrNone<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-
-            if (source is IList<TSource> list)
-            {
-                switch (list.Count)
-                {
-                    case 0: return Option.None<TSource>();
-                    case 1: return list[0].Some();
-                }
-            }
-#if !NET35
-            else if (source is IReadOnlyList<TSource> readOnlyList)
-            {
-                switch (readOnlyList.Count)
-                {
-                    case 0: return Option.None<TSource>();
-                    case 1: return readOnlyList[0].Some();
-                }
-            }
-#endif
-            else
-            {
-                using (var enumerator = source.GetEnumerator())
-                {
-                    if (!enumerator.MoveNext())
-                    {
-                        return Option.None<TSource>();
-                    }
-
-                    var result = enumerator.Current;
-                    if (!enumerator.MoveNext())
-                    {
-                        return result.Some();
-                    }
-                }
-            }
-
-            return Option.None<TSource>();
+            return source.SingleOrDefault().SomeNotNull();
         }
 
         /// <summary>
@@ -338,28 +302,32 @@ namespace Optional
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            return source.SingleOrDefault(predicate).SomeNotNull();
+        }
 
-            using (var enumerator = source.GetEnumerator())
+        public static Option<TSource, SingleOrNoneResult> SingleOrNoneWithResult<TSource>(this IEnumerable<TSource> source)
+        {
+            try
             {
-                while (enumerator.MoveNext())
-                {
-                    var result = enumerator.Current;
-                    if (predicate(result))
-                    {
-                        while (enumerator.MoveNext())
-                        {
-                            if (predicate(enumerator.Current))
-                            {
-                                return Option.None<TSource>();
-                            }
-                        }
-
-                        return result.Some();
-                    }
-                }
+                return source.SingleOrNone().WithException(SingleOrNoneResult.NoResults);
             }
+            catch
+            {
+                return Option.None<TSource, SingleOrNoneResult>(SingleOrNoneResult.TwoOrMoreResults);
+            }
+        }
 
-            return Option.None<TSource>();
+        public static Option<TSource, SingleOrNoneResult> SingleOrNoneWithResult<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
+        {
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            try
+            {
+                return source.SingleOrNone(predicate).WithException(SingleOrNoneResult.NoResults);
+            }
+            catch
+            {
+                return Option.None<TSource, SingleOrNoneResult>(SingleOrNoneResult.TwoOrMoreResults);
+            }
         }
 
         /// <summary>
@@ -409,5 +377,26 @@ namespace Optional
 
             return Option.None<TSource>();
         }
+    }
+
+    /// <summary>
+    /// Linq result
+    /// </summary>
+    public enum SingleOrNoneResult
+    {
+        /// <summary>
+        /// No errors
+        /// </summary>
+        Ok,
+
+        /// <summary>
+        /// Returns no results,
+        /// </summary>
+        NoResults,
+
+        /// <summary>
+        /// Two or more results
+        /// </summary>
+        TwoOrMoreResults,
     }
 }
